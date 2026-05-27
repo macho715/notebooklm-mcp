@@ -124,7 +124,11 @@ export const Selectors = {
     addButton: [
       "button.add-source-button",
       'button[aria-label="Add source"]',
+      'button[aria-label="Add sources"]',
       'button[aria-label*="add source" i]',
+      'button[aria-label*="add sources" i]',
+      'button:has-text("Add source")',
+      'button:has-text("Add sources")',
       'button[aria-label*="quelle hinzu" i]',
       'button[aria-label*="ajouter une source" i]',
       'button[aria-label*="añadir fuente" i]',
@@ -161,6 +165,17 @@ export const Selectors = {
       '[role="dialog"]:not([aria-label*="Emoji" i]):visible textarea, ' +
       "mat-dialog-container:visible textarea, " +
       '[aria-modal="true"]:visible textarea',
+    /**
+     * Current NotebookLM builds can expose the Add sources picker as a source
+     * menu before, or instead of, a strict dialog role. Treat these controls as
+     * a ready add-source UI so source ingestion does not fail before typing.
+     */
+    sourcePickerReady: [
+      'button.drop-zone-icon-button:has(mat-icon:text-is("upload"))',
+      'button.drop-zone-icon-button:has-text("Upload files")',
+      'button.drop-zone-icon-button:has-text("Upload sources")',
+      'input[type="file"]',
+    ],
     /**
      * Source-type buttons in the Add-source overlay. Google ships them
      * *without* aria-labels — the only stable, language-agnostic anchor is

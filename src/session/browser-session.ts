@@ -17,8 +17,7 @@ import type { BrowserContext, Page } from "patchright";
 import type { SharedContextManager } from "./shared-context-manager.js";
 import type { AuthManager } from "../auth/auth-manager.js";
 import { humanType, randomDelay } from "../utils/stealth-utils.js";
-import { snapshotAllResponses } from "../utils/page-utils.js";
-import { waitForStableAnswer, snapshotPriorAnswers } from "../notebooklm/chat.js";
+import { waitForStableAnswer } from "../notebooklm/chat.js";
 import {
   extractCitations as extractCitationsFromPage,
   type SourceFormat,
@@ -382,16 +381,6 @@ export class BrowserSession {
         }
       }
 
-      // Snapshot existing responses BEFORE asking — uses the v2 chat module
-      // (issue #43). Falls back to the legacy snapshot only if the v2 helper
-      // produced nothing, so we don't regress when the new selectors miss.
-      log.info(`  📸 Snapshotting existing responses...`);
-      let existingResponses = await snapshotPriorAnswers(page);
-      if (existingResponses.length === 0) {
-        existingResponses = await snapshotAllResponses(page);
-      }
-      log.success(`  ✅ Captured ${existingResponses.length} existing responses`);
-
       // Find the chat input
       const inputSelector = await this.findChatInput();
       if (!inputSelector) {
@@ -435,7 +424,6 @@ export class BrowserSession {
         question,
         timeoutMs: CONFIG.answerTimeoutMs,
         pollIntervalMs: 750,
-        ignoreTexts: existingResponses,
       });
 
       if (!answer) {
